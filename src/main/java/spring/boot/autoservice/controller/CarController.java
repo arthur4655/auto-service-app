@@ -1,6 +1,7 @@
 package spring.boot.autoservice.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,14 +25,20 @@ public class CarController {
     }
 
     @PostMapping
-    @ApiOperation(value = "add new car to db")
-    public CarResponseDto add(@RequestBody CarRequestDto requestDto) {
+    @Operation(summary = "Add new car to db")
+    public CarResponseDto add(@Parameter(description = "Provide required the next fields in"
+            + " JSON format: licensePlate, manufacturer, model, year, ownerId")
+                                  @RequestBody CarRequestDto requestDto) {
         return dtoMapper.toDto(carService.save(dtoMapper.toModel(requestDto)));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "update existing car in db")
-    public CarResponseDto update(@PathVariable Long id, @RequestBody CarRequestDto requestDto) {
+    @Operation(summary = "Update car with provided id in db")
+    public CarResponseDto update(@Parameter(description = "id of car") @PathVariable Long id,
+                                 @Parameter(description = "Provide required the next fields in"
+                                         + " JSON format: licensePlate, manufacturer,"
+                                         + " model, year, ownerId")
+                                 @RequestBody CarRequestDto requestDto) {
         return dtoMapper.toDto(carService.update(id, dtoMapper.toModel(requestDto)));
     }
 }
