@@ -1,6 +1,7 @@
 package spring.boot.autoservice.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.math.BigDecimal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,37 +37,47 @@ public class OrderController {
     }
 
     @PostMapping
-    @ApiOperation(value = "add new order to db")
-    public OrderResponseDto add(@RequestBody OrderRequestDto requestDto) {
+    @Operation(summary = "Add new order to db")
+    public OrderResponseDto add(@Parameter(description = "Provide the next fields in JSON format: "
+                                    + "orderId, ownerId, description")
+                                    @RequestBody OrderRequestDto requestDto) {
         return orderDtoMapper.toDto(orderService.save(orderDtoMapper.toModel(requestDto)));
     }
 
     @PostMapping("/{id}")
-    @ApiOperation(value = "add product to order with id")
-    public OrderResponseDto addProduct(@PathVariable Long id,
+    @Operation(summary = "Add product to db")
+    public OrderResponseDto addProduct(@Parameter(description = "order id") @PathVariable Long id,
+                                       @Parameter(description = "Provide the next product"
+                                               + " fields in JSON format: id, price, name")
                                        @RequestBody ProductRequestDto requestDto) {
         return orderDtoMapper.toDto(orderService.addProduct(id,
                     productDtoMapper.toModel(requestDto)));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "update order with id")
-    public OrderResponseDto update(@PathVariable Long id,
+    @Operation(summary = "update order in db")
+    public OrderResponseDto update(@Parameter(description = "order id") @PathVariable Long id,
+                                   @Parameter(description = "Provide the next fields in "
+                                           + "JSON format: orderId, ownerId, description")
                                    @RequestBody OrderRequestDto requestDto) {
         return orderDtoMapper.toDto(orderService.update(id, orderDtoMapper.toModel(requestDto)));
     }
 
     @PutMapping("/{id}/status")
-    @ApiOperation(value = "update status of order with id")
-    public OrderResponseDto updateStatus(@PathVariable Long id,
+    @Operation(summary = "Update status of order")
+    public OrderResponseDto updateStatus(@Parameter(description = "order id")
+                                             @PathVariable Long id,
+                                         @Parameter(description = "provide one of the "
+                                                 + "next statuses : IN_PROCESS, COMPLETED,"
+                                                 + " FAILED, PAID")
                                          @RequestBody OrderStatusRequestDto orderStatusRequestDto) {
         return orderDtoMapper.toDto(orderService.updateStatus(id,
                 statusDtoMapper.toModel(orderStatusRequestDto)));
     }
 
     @GetMapping("/{id}/sum")
-    @ApiOperation(value = "get total cost of order")
-    public BigDecimal getTotalCost(@PathVariable Long id) {
+    @Operation(summary = "Get total cost of order")
+    public BigDecimal getTotalCost(@Parameter(description = "order id") @PathVariable Long id) {
         return orderService.getTotalCost(id);
     }
 }

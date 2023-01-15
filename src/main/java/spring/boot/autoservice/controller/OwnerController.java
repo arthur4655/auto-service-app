@@ -1,6 +1,7 @@
 package spring.boot.autoservice.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,21 +33,24 @@ public class OwnerController {
     }
 
     @PostMapping
-    @ApiOperation(value = "add new car owner to db")
+    @Operation(summary = "Add new owner to db")
     public OwnerResponseDto add(@RequestBody OwnerRequestDto requestDto) {
         return ownerDtoMapper.toDto(ownerService.save(ownerDtoMapper.toModel(requestDto)));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "update existing car owner in db")
-    public OwnerResponseDto update(@PathVariable Long id,
+    @Operation(summary = "update owner with id")
+    public OwnerResponseDto update(@Parameter(description = "owner id") @PathVariable Long id,
+                                   @Parameter(description = "Provide the next fields in"
+                                           + " JSON format: fullName")
                                    @RequestBody OwnerRequestDto requestDto) {
         return ownerDtoMapper.toDto(ownerService.update(id, ownerDtoMapper.toModel(requestDto)));
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "get list of orders of owner with id")
-    public List<OrderResponseDto> getOrders(@PathVariable Long id) {
+    @Operation(summary = "get orders of owner with id")
+    public List<OrderResponseDto> getOrders(@Parameter(description = "owner id")
+                                                @PathVariable Long id) {
         return ownerService.getOwnerProducts(id).stream()
                 .map(orderDtoMapper::toDto)
                 .collect(Collectors.toList());

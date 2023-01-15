@@ -1,6 +1,7 @@
 package spring.boot.autoservice.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,14 +25,17 @@ public class ProductController {
     }
 
     @PostMapping
-    @ApiOperation(value = "add new product to dt")
-    public ProductResponseDto add(@RequestBody ProductRequestDto requestDto) {
+    @Operation(summary = "Add new product to db")
+    public ProductResponseDto add(@Parameter(description = "Provide the next fields in "
+                + "JSON format: name, price") @RequestBody ProductRequestDto requestDto) {
         return dtoMapper.toDto(productService.save(dtoMapper.toModel(requestDto)));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "update existing product with id")
-    public ProductResponseDto update(@PathVariable Long id,
+    @Operation(summary = "Update product with id")
+    public ProductResponseDto update(@Parameter(description = "product id") @PathVariable Long id,
+                                     @Parameter(description = "Provide the next fields in "
+                                             + "JSON format: name, price")
                                      @RequestBody ProductRequestDto requestDto) {
         return dtoMapper.toDto(productService.update(id, dtoMapper.toModel(requestDto)));
     }

@@ -1,6 +1,7 @@
 package spring.boot.autoservice.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,31 +35,36 @@ public class MechanicController {
     }
 
     @PostMapping
-    @ApiOperation(value = "add mechanic to db")
-    public MechanicResponseDto add(@RequestBody MechanicRequestDto requestDto) {
+    @Operation(summary = "Add new mechanic to db")
+    public MechanicResponseDto add(@Parameter(description = "Provide the next fields in JSON format"
+            + ": fullName")
+                                       @RequestBody MechanicRequestDto requestDto) {
         return mechanicDtoMapper.toDto(mechanicService.save(mechanicDtoMapper
                 .toModel(requestDto)));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "update existing mechanic in db")
-    public MechanicResponseDto update(@PathVariable Long id,
+    @Operation(summary = "Update mechanic with id")
+    public MechanicResponseDto update(@Parameter(description = "mechanic id") @PathVariable Long id,
+                                      @Parameter(description = "Provide the next fields in "
+                                              + "JSON format : fullName")
                                       @RequestBody MechanicRequestDto requestDto) {
         return mechanicDtoMapper.toDto(mechanicService.update(id,
                 mechanicDtoMapper.toModel(requestDto)));
     }
 
     @GetMapping("/{id}/services")
-    @ApiOperation(value = "get list of orders of mechanic with id")
-    public List<ProvidedServiceResponseDto> getOrders(@PathVariable Long id) {
+    @Operation(summary = "Get list of completed orders of mechanic on id")
+    public List<ProvidedServiceResponseDto> getOrders(@Parameter(description = "mechanic id")
+                                                          @PathVariable Long id) {
         return mechanicService.getProvidedServices(id).stream()
                 .map(providedServiceDtoMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}/salary")
-    @ApiOperation(value = "get salary of mechanic with id")
-    public BigDecimal getSalary(@PathVariable Long id) {
+    @Operation(summary = "Get salary of mechanic with id")
+    public BigDecimal getSalary(@Parameter(description = "mechanic id") @PathVariable Long id) {
         return mechanicService.getSalary(id);
     }
 }
