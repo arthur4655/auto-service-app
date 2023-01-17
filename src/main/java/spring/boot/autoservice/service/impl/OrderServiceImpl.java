@@ -1,7 +1,9 @@
 package spring.boot.autoservice.service.impl;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import spring.boot.autoservice.model.Order;
 import spring.boot.autoservice.model.OrderStatus;
@@ -37,14 +39,18 @@ public class OrderServiceImpl implements OrderService {
         Product productToAdd = product.getId() == null ? productService.save(product) :
                 productService.get(product.getId());
         Order order = orderRepository.getReferenceById(id);
-        order.getProducts().add(productToAdd);
+        List<Product> products = order.getProducts();
+        products.add(productToAdd);
+        order.setProducts(products);
         return orderRepository.save(order);
     }
 
     @Override
     public Order addService(Long id, ProvidedService providedService) {
         Order order = orderRepository.getReferenceById(id);
-        order.getServices().add(providedService);
+        List<ProvidedService> services = order.getServices();
+        services.add(providedService);
+        order.setServices(services);
         return orderRepository.save(order);
     }
 
@@ -52,9 +58,8 @@ public class OrderServiceImpl implements OrderService {
     public Order updateStatus(Long id, OrderStatus orderStatus) {
         if (orderStatus.equals(OrderStatus.COMPLETED)
                 || orderStatus.equals(OrderStatus.FAILED)) {
-            LocalDate now = LocalDate.now();
             Order order = orderRepository.getReferenceById(id);
-            order.setDateOfFinishing(now);
+            order.setDateOfFinishing(LocalDate.now());
             order.setOrderStatus(orderStatus);
             return orderRepository.save(order);
         }
@@ -82,26 +87,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private BigDecimal countTotalCost(Order order) {
-        BigDecimal serviceDiscount = BigDecimal.valueOf(1 - order.getServices().size()
-                * SERVICE_DISCOUNT);
+        BigDecimal productPrice = countProductPrice(order);
+        BigDecimal servicePrice = countServicePrice(order);
+        return productPrice.add(servicePrice);
+    }
+
+    private BigDecimal countProductPrice(Order order) {
         BigDecimal productDiscount = BigDecimal.valueOf(1 - order.getProducts().size()
                 * PRODUCT_DISCOUNT);
-        BigDecimal productsPrice = order.getProducts().stream()
+        return order.getProducts().stream()
                 .map(Product::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add).multiply(productDiscount);
-        BigDecimal servicesPrice = null;
+    }
+
+    private BigDecimal countServicePrice(Order order) {
+        BigDecimal serviceDiscount = BigDecimal.valueOf(1 - order.getServices().size()
+                * SERVICE_DISCOUNT);
         if (order.getServices().size() > 1) {
-            servicesPrice = order.getServices().stream()
+            return order.getServices().stream()
                     .filter(s -> s.getProvidedServiceStatus() == ProvidedServiceStatus.UNPAID)
-                    .filter(s -> !s.getDescription().toLowerCase()
+                    .filter(s -> !s.getType().toLowerCase()
                             .contains(SERVICE_TYPE_DIAGNOSTIC))
                     .map(ProvidedService::getPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add).multiply(serviceDiscount);
         } else if (order.getServices().stream()
-                .anyMatch(s -> s.getDescription().toLowerCase()
-                        .contains(SERVICE_TYPE_DIAGNOSTIC))) {
-            servicesPrice = BigDecimal.valueOf(500);
+                .anyMatch(s -> s.getType().toLowerCase().contains(SERVICE_TYPE_DIAGNOSTIC))) {
+            return BigDecimal.valueOf(500);
         }
-        return productsPrice.add(servicesPrice);
+        return new BigDecimal(BigInteger.ZERO);
     }
 }

@@ -22,7 +22,7 @@ public class ProvidedServiceDtoMapper {
         ProvidedService service = new ProvidedService();
         service.setPrice(dto.getPrice());
         service.setMechanic(mechanicService.get(dto.getMechanicId()));
-        service.setDescription(dto.getDescription());
+        service.setType(dto.getType());
         service.setOrder(orderService.get(dto.getOrderId()));
         return service;
     }
@@ -30,7 +30,7 @@ public class ProvidedServiceDtoMapper {
     public ProvidedServiceResponseDto toDto(ProvidedService providedService) {
         ProvidedServiceResponseDto dto = new ProvidedServiceResponseDto();
         dto.setId(providedService.getId());
-        dto.setDescription(providedService.getDescription());
+        dto.setType(providedService.getType());
         dto.setMechanicId(providedService.getMechanic().getId());
         dto.setPrice(providedService.getPrice());
         dto.setProvidedServiceStatus(providedService.getProvidedServiceStatus().name());

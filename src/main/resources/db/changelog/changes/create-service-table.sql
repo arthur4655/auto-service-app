@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS public.services
 (
     id SERIAL,
-    description character varying(255),
+    type character varying(255),
     mechanic_id bigint NOT NULL,
     price numeric(38,2),
     status character varying(255),
