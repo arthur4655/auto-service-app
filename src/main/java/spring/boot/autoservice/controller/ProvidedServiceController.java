@@ -32,7 +32,9 @@ public class ProvidedServiceController {
 
     @PostMapping
     @Operation(summary = "Add new service to db")
-    public ProvidedServiceResponseDto add(@RequestBody ProvidedServiceRequestDto requestDto) {
+    public ProvidedServiceResponseDto add(@Parameter(description = "Provide the next fields"
+            + "in JSON format: mechanicId, price, type, orderId")
+                                              @RequestBody ProvidedServiceRequestDto requestDto) {
         return dtoMapper.toDto(providedServiceService.save(dtoMapper.toModel(requestDto)));
     }
 
@@ -42,7 +44,7 @@ public class ProvidedServiceController {
                                                  @PathVariable Long id,
                                              @Parameter(description = "Provide the next fields"
                                                      + "in JSON format: mechanicId, price,"
-                                                     + " description, orderId")
+                                                     + " type, orderId")
                                              @RequestBody ProvidedServiceRequestDto requestDto) {
         return dtoMapper.toDto(providedServiceService.update(id, dtoMapper.toModel(requestDto)));
     }

@@ -14,7 +14,6 @@ import spring.boot.autoservice.service.MechanicService;
 @Service
 public class MechanicServiceImpl implements MechanicService {
     private static final BigDecimal SALARY_RATIO = new BigDecimal("0.4");
-
     private final MechanicRepository mechanicRepository;
     private final ProvidedServiceRepository providedServiceRepository;
 

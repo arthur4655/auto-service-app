@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 public class ProvidedServiceResponseDto {
     private Long id;
-    private String description;
+    private String type;
     private Long mechanicId;
     private BigDecimal price;
     private String providedServiceStatus;

@@ -9,6 +9,6 @@ import lombok.Setter;
 public class ProvidedServiceRequestDto {
     private Long mechanicId;
     private BigDecimal price;
-    private String description;
+    private String type;
     private Long orderId;
 }
